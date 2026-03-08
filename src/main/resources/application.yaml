@@ -1,0 +1,10 @@
+spring:
+  application:
+    name: identity-resource-server
+  security:
+    oauth2:
+      resource server:
+        jwt:
+          issuer-uri: http://localhost:8080/realms/custom-auth-realm
+server:
+  port: 8081
