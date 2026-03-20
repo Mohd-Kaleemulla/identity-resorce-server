@@ -4,6 +4,7 @@ import com.kaleem.identity.model.OrderEvent;
 import com.kaleem.identity.producer.OrderProducerService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -24,8 +25,14 @@ public class OrderController {
 
     @PostMapping
     public ResponseEntity<String> placeOrder(@RequestBody OrderEvent event) {
-        log.info("Order received via REST [{}]", event.getOrderId());
-        producerService.publishOrder(event);
-        return ResponseEntity.accepted().body("Order accepted: " + event.getOrderId());
+        try {
+
+            log.info("Order received via REST [{}]", event.getOrderId());
+            producerService.publishOrder(event);
+            return ResponseEntity.accepted().body("Order accepted: " + event.getOrderId());
+        } catch (RuntimeException ex) {
+            return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE)
+                    .body("Service temporarily unavailable. Please try again.");
+        }
     }
 }

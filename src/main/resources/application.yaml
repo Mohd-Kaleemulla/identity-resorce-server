@@ -41,3 +41,12 @@ server:
 app:
   kafka:
     topic: order-events
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, metrics, env, beans, mappings
+  endpoint:
+    health:
+      show-details: always
