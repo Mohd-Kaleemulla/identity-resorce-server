@@ -14,14 +14,26 @@ spring:
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      properties:
+        reconnect.backoff.ms: 2000
+        reconnect.backoff.max.ms: 10000    # max wait between retries — 10s
+        delivery.timeout.ms: 5000
+        request.timeout.ms: 3000
+        max.block.ms: 3000
 
     consumer:
       group-id: identity-resource-group
       auto-offset-reset: earliest
-      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
       properties:
+        spring.deserializer.value.delegate.class: org.springframework.kafka.support.serializer.JsonDeserializer
+        spring.deserializer.key.delegate.class: org.apache.kafka.common.serialization.StringDeserializer
         spring.json.trusted.packages: "com.kaleem.identity.*"
+        reconnect.backoff.ms: 2000
+        reconnect.backoff.max.ms: 10000    # stops hammering every 100ms
+        heartbeat.interval.ms: 5000        # check less frequently
+        session.timeout.ms: 30000
+      value-deserializer: org.springframework.kafka.support.serializer.ErrorHandlingDeserializer
+      key-deserializer: org.springframework.kafka.support.serializer.ErrorHandlingDeserializer
 
 server:
   port: 8081
